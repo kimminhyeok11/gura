@@ -2,176 +2,136 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GURA TOON | Premium Webtoon Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gura Toon Reader</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@900&family=Playfair+Display:italic,wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #8B5CF6; --bg: #050507; }
-        body { 
-            background-color: var(--bg); 
-            color: #fff; 
-            font-family: 'Noto Sans KR', sans-serif; 
-            overflow-x: hidden;
-            letter-spacing: -0.02em;
-        }
-        
-        /* 텍스트 그라데이션 및 타이포 */
-        .text-gradient { 
-            background: linear-gradient(135deg, #fff 40%, #A78BFA 100%); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
-
-        /* 프리미엄 카드 디자인 */
-        .toon-card { 
-            background: rgba(255, 255, 255, 0.02); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 40px;
-            overflow: hidden;
-            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s;
-        }
-        @media (hover: hover) {
-            .toon-card:hover { 
-                transform: translateY(-8px); 
-                border-color: rgba(139, 92, 246, 0.3);
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            }
-        }
-
-        /* 애니메이션 */
-        .reveal { animation: reveal 1s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
-        @keyframes reveal { 
-            from { opacity: 0; transform: translateY(40px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* 배경 조명 효과 */
-        .bg-glow {
-            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% -20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
-            z-index: -1; pointer-events: none;
-        }
-        
-        ::-webkit-scrollbar { width: 0; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0a0a0c; color: #fff; }
+        .toon-card { transition: transform 0.3s ease; }
+        .toon-card:hover { transform: translateY(-8px); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body>
-
-    <div class="bg-glow"></div>
-
-    <nav class="fixed top-0 w-full z-50 bg-[#050507]/80 backdrop-blur-md border-b border-white/5">
-        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-            <h1 class="font-orbitron text-lg tracking-widest font-black italic">GURA<span class="text-purple-500">TOON</span></h1>
-            <div class="flex items-center gap-6">
-                <div id="liveIndicator" class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-emerald-500/80 tracking-widest uppercase">Live Feed</span>
-                </div>
-            </div>
+<body class="min-h-screen">
+    <nav class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5 px-6 py-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-black font-orbitron italic tracking-tighter">GURA <span class="text-purple-500">READER</span></h1>
+            <button onclick="loadEpisodes()" class="text-xs font-bold text-purple-400 hover:text-white transition-colors uppercase tracking-widest">Refresh</button>
         </div>
     </nav>
 
-    <header class="pt-32 pb-20 px-6 max-w-4xl mx-auto text-center reveal">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-white/5 text-gray-400 text-[10px] font-bold tracking-[0.3em] mb-6 border border-white/10 uppercase">
-            Official AI Collection
-        </span>
-        <h2 class="text-5xl md:text-7xl font-black leading-[1.05] mb-8 text-gradient italic tracking-tighter">
-            구라가 말하고<br>AI가 그리다
-        </h2>
-        <p class="text-gray-500 text-sm md:text-lg font-light leading-relaxed max-w-xl mx-auto">
-            시대를 관통하는 독설가 김구라의 팩트폭격.<br>
-            가장 최근 발행된 에피소드부터 순차적으로 만나보세요.
-        </p>
-    </header>
-
-    <main id="feed" class="max-w-xl md:max-w-2xl mx-auto px-6 pb-40 space-y-16 md:space-y-24">
-        <div class="toon-card opacity-20">
-            <div class="aspect-[4/5] bg-white/10 shimmer"></div>
-            <div class="p-10 space-y-4">
-                <div class="h-10 bg-white/10 w-3/4 rounded-2xl"></div>
-                <div class="h-5 bg-white/10 w-full rounded-2xl"></div>
+    <main class="max-w-5xl mx-auto p-6 lg:p-12">
+        <div id="episodeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading State -->
+            <div class="col-span-full py-20 text-center opacity-30 animate-pulse">
+                데이터를 불러오고 있습니다...
             </div>
         </div>
     </main>
 
-    <footer class="py-20 border-t border-white/5 text-center">
-        <p class="font-orbitron text-[10px] tracking-[0.5em] text-gray-700 uppercase">© GURA TOON STUDIO | NO-REPLY ZONE</p>
-    </footer>
+    <!-- Detail Modal (Simulated) -->
+    <div id="modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95">
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-white text-3xl">&times;</button>
+        <div id="modalContent" class="max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll bg-zinc-900 rounded-3xl">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
 
     <script>
         const SB_URL = "https://auhaxohbsnttmryesffe.supabase.co";
         const SB_KEY = "sb_publishable_wddiMfFQV6WeD0kpwl6n_w__Vrtx7Rl";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        const UI = {
-            feed: document.getElementById('feed')
-        };
+        async function loadEpisodes() {
+            const grid = document.getElementById('episodeGrid');
+            const { data, error } = await _supabase
+                .from('episodes')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        // 갤러리 카드 렌더링
-        function createGalleryCard(data, index) {
-            const card = document.createElement('article');
-            card.className = `toon-card reveal`;
-            card.style.animationDelay = `${index * 0.1}s`;
-            
-            card.innerHTML = `
-                <div class="relative overflow-hidden group">
-                    <img src="${data.image_url}" class="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-transparent opacity-80"></div>
-                    <div class="absolute top-6 left-6">
-                         <span class="px-3 py-1 bg-black/40 backdrop-blur-md text-[9px] font-bold tracking-widest text-gray-300 border border-white/10 rounded-full italic">NEW EPISODE</span>
+            if (error) {
+                grid.innerHTML = `<p class="text-red-500">에러: ${error.message}</p>`;
+                return;
+            }
+
+            grid.innerHTML = data.map(ep => `
+                <div class="toon-card glass rounded-2xl overflow-hidden cursor-pointer bg-zinc-900 border border-white/5 shadow-xl" onclick="openEpisode('${ep.id}')">
+                    <div class="aspect-square bg-zinc-800">
+                        <img src="${ep.image_url}" class="w-full h-full object-cover" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-black line-clamp-1 mb-2">${ep.title}</h3>
+                        <p class="text-sm text-gray-500 line-clamp-2 italic">${ep.content}</p>
                     </div>
                 </div>
-                <div class="p-8 md:p-12">
-                    <h3 class="text-3xl md:text-4xl font-black mb-8 leading-tight italic tracking-tighter text-white">
-                        ${data.title}
-                    </h3>
-                    <div class="relative">
-                        <svg class="absolute -top-6 -left-2 text-purple-500/20 w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 9.351-9.609v4.069c-2.715.021-3.918 1.857-3.918 4.72h4.099v8.211h-9.532zm-14.017 0v-7.391c0-5.704 3.748-9.57 9.355-9.609v4.069c-2.715.021-3.909 1.857-3.909 4.72h4.099v8.211h-9.545z"/></svg>
-                        <p class="text-gray-300 text-lg md:text-xl leading-relaxed font-light font-serif-italic relative z-10">
-                            ${data.content}
-                        </p>
+            `).join('');
+        }
+
+        async function openEpisode(id) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            const { data: ep } = await _supabase.from('episodes').select('*').eq('id', id).single();
+            const { data: comments } = await _supabase.from('comments').select('*').eq('episode_id', id).order('created_at', { ascending: false });
+
+            content.innerHTML = `
+                <div class="flex flex-col md:flex-row">
+                    <div class="md:w-1/2">
+                        <img src="${ep.image_url}" class="w-full sticky top-0">
                     </div>
-                    <div class="mt-10 pt-8 border-t border-white/5 flex justify-between items-center">
-                        <span class="text-[9px] font-mono text-gray-600 tracking-widest uppercase">Verified AI Art</span>
-                        <div class="flex gap-1">
-                            <div class="w-1 h-1 rounded-full bg-purple-500/40"></div>
-                            <div class="w-1 h-1 rounded-full bg-purple-500/60"></div>
-                            <div class="w-1 h-1 rounded-full bg-purple-500"></div>
+                    <div class="md:w-1/2 p-8 md:p-12 bg-zinc-900">
+                        <h2 class="text-3xl font-black mb-6">${ep.title}</h2>
+                        <div class="bg-black/30 p-6 rounded-2xl border-l-4 border-purple-600 italic text-gray-300 leading-relaxed mb-10">
+                            "${ep.content}"
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <h4 class="text-sm font-bold uppercase tracking-widest text-purple-400">Comments</h4>
+                            <div class="flex gap-2">
+                                <input id="cmtInput" class="flex-grow bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-purple-500" placeholder="댓글을 입력하세요...">
+                                <button onclick="postComment('${ep.id}')" class="bg-purple-600 px-4 py-2 rounded-lg text-sm font-bold">등록</button>
+                            </div>
+                            <div class="space-y-4 max-h-60 overflow-y-auto custom-scroll pr-2">
+                                ${comments.length ? comments.map(c => `
+                                    <div class="text-sm border-b border-white/5 pb-2">
+                                        <span class="font-bold text-gray-400">${c.nickname}</span>
+                                        <p class="text-gray-300 mt-1">${c.comment}</p>
+                                    </div>
+                                `).join('') : '<p class="text-xs text-gray-600">첫 댓글을 남겨보세요.</p>'}
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
-            return card;
         }
 
-        // DB에서 최신 데이터 가져오기
-        async function fetchGallery() {
-            try {
-                const { data, error } = await _supabase
-                    .from('episodes')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+        async function postComment(epId) {
+            const input = document.getElementById('cmtInput');
+            if (!input.value.trim()) return;
 
-                UI.feed.innerHTML = ''; // 스켈레톤 제거
+            const { error } = await _supabase.from('comments').insert([{
+                episode_id: epId,
+                comment: input.value,
+                nickname: '익명 독자'
+            }]);
 
-                if (data && data.length > 0) {
-                    data.forEach((item, index) => {
-                        UI.feed.appendChild(createGalleryCard(item, index));
-                    });
-                } else {
-                    UI.feed.innerHTML = '<div class="text-center py-20 text-gray-700 font-mono text-xs tracking-widest uppercase">Waiting for first release...</div>';
-                }
-            } catch (err) {
-                console.error("DB Fetch Error:", err);
+            if (!error) {
+                input.value = '';
+                openEpisode(epId); // Refresh modal
             }
         }
 
-        window.onload = fetchGallery;
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onload = loadEpisodes;
     </script>
 </body>
 </html>
