@@ -3,233 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GURA TOON STUDIO v6.0</title>
+    <title>GURA TOON | Premium Webtoon Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@800&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@900&display=swap" rel="stylesheet">
     <style>
-        :root { --p-purple: #A78BFA; --p-indigo: #6366F1; --dark-bg: #030305; }
-        body { 
-            background-color: var(--dark-bg); 
-            color: #F8FAFC; 
-            font-family: 'Noto Sans KR', sans-serif;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* 글래스모피즘 효과 */
-        .glass { background: rgba(15, 15, 25, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        :root { --accent: #8B5CF6; --bg: #0A0A0C; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Noto Sans KR', sans-serif; overflow-x: hidden; }
         
-        /* 커스텀 스크롤 */
-        ::-webkit-scrollbar { width: 0px; } /* 모바일 환경을 위해 숨김 */
+        /* 텍스트 그라데이션 */
+        .text-gradient { background: linear-gradient(135deg, #fff 30%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* 카드 유리효과 */
+        .toon-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toon-card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2); }
 
         /* 애니메이션 */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .card-anim { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        .shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
-        }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s ease forwards; }
 
-        /* 버튼 네온 효과 */
-        .neon-btn {
-            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* 커스텀 스크롤바 숨기기 (모바일 감성) */
+        ::-webkit-scrollbar { width: 0; }
+        
+        /* 히어로 섹션 블러 배경 */
+        .hero-blur {
+            position: absolute; top: -10%; left: -10%; width: 40%; height: 40%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            filter: blur(80px); z-index: -1;
         }
-        .neon-btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); }
     </style>
 </head>
-<body class="flex flex-col md:flex-row min-h-screen">
+<body>
 
-    <aside class="z-50 w-full md:w-[400px] shrink-0 glass sticky top-0 md:h-screen flex flex-col p-6 md:p-8 border-b md:border-r border-white/10">
-        <header class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-2xl font-black font-orbitron italic tracking-tighter bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">GURA STUDIO</h1>
-                <div id="syncStatus" class="flex items-center gap-1.5 mt-1.5">
-                    <div class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
-                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Core Offline</span>
-                </div>
+    <nav class="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <h1 class="font-orbitron text-xl tracking-tighter font-black">GURA<span class="text-purple-500">TOON</span></h1>
+            <div class="flex items-center gap-4">
+                <span id="dbStatus" class="w-2 h-2 rounded-full bg-gray-600"></span>
+                <button class="text-xs font-bold tracking-widest text-gray-400 hover:text-white transition-colors uppercase">Archive</button>
             </div>
-            <button onclick="clearLogs()" class="p-2 rounded-full hover:bg-white/5 transition-colors text-gray-500">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </button>
-        </header>
+        </div>
+    </nav>
 
-        <div class="flex-grow flex flex-col mb-6">
-            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">System Log</span>
-            <div id="logBox" class="flex-grow bg-black/40 rounded-2xl p-4 font-mono text-[11px] leading-relaxed overflow-y-auto max-h-[150px] md:max-h-none border border-white/5">
-                <div class="text-violet-400/60">Ready to synthesize...</div>
+    <header class="relative pt-32 pb-16 px-6 max-w-5xl mx-auto overflow-hidden">
+        <div class="hero-blur"></div>
+        <div class="hero-blur" style="top: 20%; left: 60%; background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);"></div>
+        
+        <div class="fade-in">
+            <span class="inline-block px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-black tracking-[0.2em] mb-4 border border-purple-500/20">AI-GENERATED STUDIO</span>
+            <h2 class="text-4xl md:text-6xl font-black leading-[1.1] mb-6 text-gradient italic">
+                구라가 날리는<br>시원한 팩트폭격
+            </h2>
+            <p class="text-gray-400 text-sm md:text-base font-light leading-relaxed max-w-md">
+                매일 새롭게 업데이트되는 독설의 향연. <br>
+                김구라 AI가 직접 그린 최신 에피소드를 감상하세요.
+            </p>
+        </div>
+    </header>
+
+    <main id="feed" class="max-w-2xl mx-auto px-6 pb-32 space-y-12 md:space-y-20">
+        <div class="toon-card animate-pulse">
+            <div class="aspect-[4/5] bg-white/5"></div>
+            <div class="p-8 space-y-4">
+                <div class="h-8 bg-white/5 w-2/3 rounded-lg"></div>
+                <div class="h-4 bg-white/5 w-full rounded-lg"></div>
             </div>
         </div>
 
-        <div class="hidden md:block space-y-4">
-            <div id="progressContainer" class="hidden animate-pulse">
-                <div class="flex justify-between text-[11px] font-bold mb-2">
-                    <span class="text-violet-400" id="progressText">PROCESSING</span>
-                    <span id="progressPercent">0%</span>
-                </div>
-                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div id="progressBar" class="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-300" style="width: 0%"></div>
-                </div>
-            </div>
-            <button id="genBtn" class="neon-btn w-full py-5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-black text-sm tracking-tight flex items-center justify-center gap-3">
-                <span class="text-xl">⚡</span>
-                <span>에피소드 발행하기</span>
-            </button>
-        </div>
-    </aside>
+        </main>
 
-    <main class="flex-grow relative pb-32 md:pb-12">
-        <div id="viewport" class="max-w-2xl mx-auto py-8 md:py-16 px-5 space-y-12">
-            <div id="emptyState" class="py-20 flex flex-col items-center opacity-40">
-                <div class="w-20 h-20 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mb-6">
-                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-                <p class="text-sm font-light tracking-widest uppercase">Select 'Generate' to Start</p>
+    <div class="fixed bottom-8 right-6 z-[60] flex flex-col items-end gap-4">
+        <div id="miniProgress" class="hidden w-48 p-3 glass rounded-2xl border border-white/10 shadow-2xl mb-2 animate-bounce">
+            <div class="flex justify-between text-[10px] font-bold mb-1">
+                <span id="pText">GENERATING...</span>
+                <span id="pPerc">0%</span>
+            </div>
+            <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                <div id="pBar" class="h-full bg-purple-500 transition-all duration-300" style="width: 0%"></div>
             </div>
         </div>
-    </main>
 
-    <div class="md:hidden fixed bottom-0 left-0 w-full p-5 glass z-50 rounded-t-[32px] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-        <div id="mProgressContainer" class="hidden mb-4">
-             <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                <div id="mProgressBar" class="h-full bg-violet-500 transition-all duration-300" style="width: 0%"></div>
-            </div>
-        </div>
-        <button id="mGenBtn" class="neon-btn w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black flex items-center justify-center gap-3">
-            <span class="text-lg">⚡</span>
-            <span>새 에피소드 제작</span>
+        <button id="fab" class="w-16 h-16 rounded-full bg-purple-600 shadow-[0_0_30px_rgba(139,92,246,0.5)] flex items-center justify-center text-white active:scale-90 transition-all group overflow-hidden relative">
+            <div class="absolute inset-0 bg-gradient-to-tr from-purple-600 to-indigo-600"></div>
+            <svg class="relative z-10 group-hover:rotate-12 transition-transform" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
         </button>
     </div>
 
     <script>
-        // --- 데이터베이스 & API 설정 ---
         const SB_URL = "https://auhaxohbsnttmryesffe.supabase.co";
         const SB_KEY = "sb_publishable_wddiMfFQV6WeD0kpwl6n_w__Vrtx7Rl";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         const UI = {
-            logs: document.getElementById('logBox'),
-            viewport: document.getElementById('viewport'),
-            status: document.getElementById('syncStatus'),
-            empty: document.getElementById('emptyState'),
-            // PC UI
-            btn: document.getElementById('genBtn'),
-            bar: document.getElementById('progressBar'),
-            pCont: document.getElementById('progressContainer'),
-            pText: document.getElementById('progressText'),
-            pPerc: document.getElementById('progressPercent'),
-            // 모바일 전용 UI
-            mBtn: document.getElementById('mGenBtn'),
-            mBar: document.getElementById('mProgressBar'),
-            mCont: document.getElementById('mProgressContainer')
+            feed: document.getElementById('feed'),
+            fab: document.getElementById('fab'),
+            pBar: document.getElementById('pBar'),
+            pCont: document.getElementById('miniProgress'),
+            pPerc: document.getElementById('pPerc'),
+            pText: document.getElementById('pText'),
+            dbStatus: document.getElementById('dbStatus')
         };
 
-        function addLog(msg, type = 'info') {
-            const div = document.createElement('div');
-            const colors = { info: 'text-violet-300/70', success: 'text-emerald-400', error: 'text-rose-400' };
-            div.className = `mb-1 ${colors[type] || colors.info}`;
-            div.innerHTML = `<span class="opacity-30 mr-2">></span>${msg}`;
-            UI.logs.appendChild(div);
-            UI.logs.scrollTop = UI.logs.scrollHeight;
-        }
-
-        function clearLogs() { UI.logs.innerHTML = '<div class="text-violet-400/60 italic text-[10px]">Log cleared. Waiting for command...</div>'; }
-
-        function setProgress(val, text) {
-            [UI.bar, UI.mBar].forEach(b => b.style.width = `${val}%`);
-            [UI.pCont, UI.mCont].forEach(c => c.classList.remove('hidden'));
-            if(text) UI.pText.innerText = text.toUpperCase();
-            UI.pPerc.innerText = `${val}%`;
-        }
-
-        async function startProcess() {
-            [UI.btn, UI.mBtn].forEach(b => b.disabled = true);
-            setProgress(10, "Story Design");
-            addLog("Brainstorming narrative...", "info");
-
-            try {
-                // 시뮬레이션 지연 (실제 API 호출 시 교체)
-                await new Promise(r => setTimeout(r, 1500));
-                
-                const mockData = {
-                    title: "지하철 2호선 코인 전사들",
-                    content: "야, 얼굴이 왜 그렇게 퍼렇게 질렸어? 업비트 파란불이 네 얼굴에 반사된 거야? 정신 차려!",
-                    prompt: "Korean comedian Gura Kim yelling at a crying man on a subway, anime style"
-                };
-
-                setProgress(60, "Art Generation");
-                addLog("Drawing illustrations with AI...", "info");
-                
-                await new Promise(r => setTimeout(r, 2000));
-                const mockImg = `https://picsum.photos/seed/${Date.now()}/800/1000`;
-
-                renderFinal(mockData, mockImg);
-                setProgress(100, "Completed");
-                addLog("New toon has been deployed.", "success");
-
-            } catch (err) {
-                addLog(err.message, "error");
-            } finally {
-                [UI.btn, UI.mBtn].forEach(b => b.disabled = false);
-                setTimeout(() => [UI.pCont, UI.mCont].forEach(c => c.classList.add('hidden')), 3000);
-            }
-        }
-
-        function renderFinal(project, url) {
-            if(UI.empty) UI.empty.remove();
-
-            const card = document.createElement('div');
-            card.className = "card-anim glass rounded-[2.5rem] overflow-hidden shadow-2xl group";
+        // 방문자를 위한 카드 렌더링 (디자이너 퀄리티)
+        function createCard(project, url, isNew = false) {
+            const card = document.createElement('article');
+            card.className = `toon-card ${isNew ? 'fade-in' : ''}`;
             card.innerHTML = `
-                <div class="relative overflow-hidden">
-                    <img src="${url}" class="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#030305] via-transparent to-transparent opacity-80"></div>
-                    <div class="absolute bottom-6 left-8">
-                        <span class="px-3 py-1 bg-violet-500 text-white text-[10px] font-black tracking-widest rounded-full shadow-lg">EPISODE #NEW</span>
-                    </div>
+                <div class="relative overflow-hidden group">
+                    <img src="${url}" class="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-transparent to-transparent opacity-90"></div>
                 </div>
-                <div class="p-8 md:p-10 space-y-6">
-                    <h2 class="text-3xl md:text-4xl font-black tracking-tighter italic leading-tight uppercase font-orbitron">
+                <div class="p-8 md:p-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-[10px] font-bold text-purple-400 border border-purple-500/30">AI</span>
+                        <time class="text-[10px] font-bold text-gray-500 tracking-widest uppercase">Episode ${Math.floor(Math.random()*100)}</time>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-black mb-6 leading-tight italic tracking-tighter">
                         ${project.title}
-                    </h2>
-                    <div class="relative">
-                        <div class="absolute -left-4 top-0 w-1 h-full bg-violet-500 rounded-full opacity-50"></div>
-                        <p class="text-gray-300 text-lg md:text-xl leading-relaxed italic font-light">
+                    </h3>
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-purple-500 to-transparent"></div>
+                        <p class="text-gray-400 text-lg leading-relaxed italic font-light font-serif">
                             "${project.content}"
                         </p>
                     </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
-                        <span class="text-[10px] font-mono text-gray-600">RENDERED BY GURA-CORE v6.0</span>
-                        <div class="flex gap-2">
-                            <div class="w-2 h-2 rounded-full bg-violet-500/30"></div>
-                            <div class="w-2 h-2 rounded-full bg-violet-500/60"></div>
-                        </div>
-                    </div>
                 </div>
             `;
-            
-            UI.viewport.prepend(card);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return card;
         }
 
-        [UI.btn, UI.mBtn].forEach(b => b.addEventListener('click', startProcess));
-
-        window.onload = async () => {
-            const { error } = await _supabase.from('episodes').select('id').limit(1);
-            if (!error) {
-                UI.status.innerHTML = `
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Core Online</span>
-                `;
-                addLog("Database handshake successful.", "success");
+        // 초기 데이터 로드 (DB에서 가져오기)
+        async function loadEpisodes() {
+            UI.feed.innerHTML = ''; // 스켈레톤 제거
+            const { data, error } = await _supabase.from('episodes').select('*').order('created_at', { ascending: false });
+            
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    const card = createCard({ title: item.title, content: item.content }, item.image_url);
+                    UI.feed.appendChild(card);
+                });
+            } else {
+                UI.feed.innerHTML = '<p class="text-center text-gray-600 py-20">아직 등록된 에피소드가 없습니다.</p>';
             }
+        }
+
+        // 새 에피소드 제작 프로세스 (진행률 UI 포함)
+        async function generateNew() {
+            UI.fab.disabled = true;
+            UI.pCont.classList.remove('hidden');
+            
+            // 1. 스토리 생성 단계
+            updateProgress(20, "STORYING");
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // 2. 이미지 생성 단계
+            updateProgress(60, "DRAWING");
+            await new Promise(r => setTimeout(r, 2500));
+            
+            const mock = {
+                title: "코인 중독자의 최후",
+                content: "야, 층수 낮아졌다고 좋아하지 마. 너 그러다 지하 뚫고 내핵까지 구경한다니까?",
+                url: "https://picsum.photos/seed/" + Date.now() + "/800/1000"
+            };
+
+            // 3. DB 저장 및 렌더링
+            updateProgress(100, "DONE");
+            const newCard = createCard(mock, mock.url, true);
+            UI.feed.prepend(newCard); // 최신글 맨 위로!
+            
+            setTimeout(() => {
+                UI.pCont.classList.add('hidden');
+                UI.fab.disabled = false;
+                window.scrollTo({ top: newCard.offsetTop - 100, behavior: 'smooth' });
+            }, 1000);
+        }
+
+        function updateProgress(val, text) {
+            UI.pBar.style.width = val + '%';
+            UI.pPerc.innerText = val + '%';
+            UI.pText.innerText = text;
+        }
+
+        UI.fab.addEventListener('click', generateNew);
+
+        window.onload = () => {
+            loadEpisodes();
+            // DB 연결 확인
+            _supabase.from('episodes').select('id', { count: 'exact', head: true })
+                .then(({error}) => {
+                    if(!error) UI.dbStatus.classList.replace('bg-gray-600', 'bg-emerald-500');
+                });
         };
     </script>
 </body>
