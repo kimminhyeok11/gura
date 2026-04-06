@@ -3,308 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GURA TOON STUDIO v6.0 - High Quality UI</title>
+    <title>GURA TOON STUDIO v6.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@600;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'gura-dark': '#010103',
-                        'gura-panel': '#0A0A12',
-                        'gura-purple': '#A78BFA',
-                        'gura-purple-dark': '#7C3AED',
-                    },
-                    fontFamily: {
-                        sans: ['Noto Sans KR', 'sans-serif'],
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        mono: ['Fira Code', 'monospace'],
-                    },
-                    boxShadow: {
-                        'neon-purple': '0 0 15px rgba(167, 139, 250, 0.3)',
-                        'neon-purple-bold': '0 0 25px rgba(139, 92, 246, 0.6)',
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Orbitron:wght@800&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #010103; color: #E8E8EE; -webkit-font-smoothing: antialiased; }
+        :root { --p-purple: #A78BFA; --p-indigo: #6366F1; --dark-bg: #030305; }
+        body { 
+            background-color: var(--dark-bg); 
+            color: #F8FAFC; 
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 글래스모피즘 효과 */
+        .glass { background: rgba(15, 15, 25, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         
-        /* 스크롤바 디자인 */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.2); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(167, 139, 250, 0.5); }
+        /* 커스텀 스크롤 */
+        ::-webkit-scrollbar { width: 0px; } /* 모바일 환경을 위해 숨김 */
 
-        /* 글래스모피즘 */
-        .glass-panel {
-            background: rgba(10, 10, 18, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        
-        /* 로그창 내부 스크롤 효과 */
-        .log-box {
-            mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-        }
-
-        /* 로그 항목 스타일 */
-        .log-entry { font-size: 11px; padding: 3px 0; border-left: 2px solid transparent; transition: all 0.2s; }
-        .log-entry:hover { background: rgba(255,255,255,0.02); }
-        .log-success { border-left-color: #10B981; color: #6EE7B7; }
-        .log-error { border-left-color: #EF4444; color: #FCA5A5; }
-        .log-info { border-left-color: #A78BFA; color: #C4B5FD; }
-
-        /* 카드 등장 애니메이션 */
-        .card-enter {
-            animation: cardSlideUpIn 0.7s cubic-bezier(0.19, 1, 0.22, 1) both;
-            will-change: transform, opacity;
-        }
-        @keyframes cardSlideUpIn {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        /* 애니메이션 */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        .card-anim { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        /* 로딩 애니메이션 */
-        @keyframes pulse-neon {
-            0%, 100% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); opacity: 1; }
-            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.7); opacity: 0.8; }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
         }
-        .btn-loading {
-            animation: pulse-neon 1.5s infinite;
-            background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%) !important;
-        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        /* 인풋 및 포커스 스타일 */
-        button:focus-visible { outline: 2px solid #A78BFA; outline-offset: 2px; }
+        /* 버튼 네온 효과 */
+        .neon-btn {
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .neon-btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
 
-    <aside class="w-full md:w-[360px] md:h-screen shrink-0 sticky top-0 md:static z-50 transition-all duration-300 overflow-y-auto overflow-x-hidden md:border-r border-white/5 bg-gura-dark md:bg-gura-panel">
-        <div class="glass-panel md:bg-transparent p-5 md:p-8 flex flex-col h-full">
-            <header class="flex items-center justify-between mb-6 md:mb-10">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-black font-orbitron tracking-tighter text-white italic leading-none">
-                        GURA<span class="text-gura-purple">AUTO</span>
-                    </h1>
-                    <div id="syncStatus" class="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-gray-600 uppercase mt-1.5 transition-colors">
-                        <span class="w-2 h-2 rounded-full bg-gray-700 animate-pulse"></span> DB SYNCHRONIZING
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                     <button onclick="clearLogs()" class="p-2 text-gray-600 hover:text-gura-purple border border-white/5 hover:border-gura-purple/30 rounded-lg transition-all" title="Clear Logs">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
-                    </button>
-                </div>
-            </header>
-
-            <div class="flex-grow flex flex-col mb-6 md:mb-10">
-                <div class="flex justify-between items-center mb-2 px-1">
-                    <h3 class="text-[11px] font-extrabold text-gray-500 uppercase tracking-widest font-mono">Process Console</h3>
-                </div>
-                <div class="relative bg-black/40 rounded-xl border border-white/5 p-4 flex-grow">
-                    <div id="logBox" class="log-box h-[120px] md:h-auto md:absolute md:inset-4 overflow-y-auto font-mono text-gray-400">
-                        </div>
+    <aside class="z-50 w-full md:w-[400px] shrink-0 glass sticky top-0 md:h-screen flex flex-col p-6 md:p-8 border-b md:border-r border-white/10">
+        <header class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-black font-orbitron italic tracking-tighter bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">GURA STUDIO</h1>
+                <div id="syncStatus" class="flex items-center gap-1.5 mt-1.5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Core Offline</span>
                 </div>
             </div>
+            <button onclick="clearLogs()" class="p-2 rounded-full hover:bg-white/5 transition-colors text-gray-500">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </header>
 
-            <div class="mt-auto space-y-4">
-                <div id="progressContainer" class="hidden animate-fade-in">
-                    <div class="flex justify-between text-[11px] mb-1.5 font-bold font-mono">
-                        <span id="progressText" class="text-gura-purple tracking-wider">INITIALIZING</span>
-                        <span id="progressPercent" class="text-gray-500">0%</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div id="progressBar" class="h-full bg-gradient-to-r from-gura-purple-dark to-gura-purple transition-all duration-300 shadow-neon-purple" style="width: 0%"></div>
-                    </div>
-                </div>
-                
-                <button id="genBtn" class="w-full py-4 md:py-5 rounded-2xl text-white font-extrabold text-base flex items-center justify-center gap-3 bg-gradient-to-br from-gura-purple-dark to-indigo-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-neon-purple-bold active:scale-[0.98] shadow-lg group">
-                    <span id="btnIcon" class="text-xl group-hover:animate-bounce">⚡</span>
-                    <span id="btnText" class="tracking-tight">새 에피소드 즉시 발행</span>
-                </button>
-                <p class="text-[11px] text-gray-600 text-center font-light px-4 leading-relaxed">AI가 스토리를 구상하고 만화를 그리며,<br>완성된 작품은 하단 피드 맨 위에 나타납니다.</p>
+        <div class="flex-grow flex flex-col mb-6">
+            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">System Log</span>
+            <div id="logBox" class="flex-grow bg-black/40 rounded-2xl p-4 font-mono text-[11px] leading-relaxed overflow-y-auto max-h-[150px] md:max-h-none border border-white/5">
+                <div class="text-violet-400/60">Ready to synthesize...</div>
             </div>
+        </div>
+
+        <div class="hidden md:block space-y-4">
+            <div id="progressContainer" class="hidden animate-pulse">
+                <div class="flex justify-between text-[11px] font-bold mb-2">
+                    <span class="text-violet-400" id="progressText">PROCESSING</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+            <button id="genBtn" class="neon-btn w-full py-5 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-black text-sm tracking-tight flex items-center justify-center gap-3">
+                <span class="text-xl">⚡</span>
+                <span>에피소드 발행하기</span>
+            </button>
         </div>
     </aside>
 
-    <main class="flex-grow bg-gura-dark">
-        <div id="viewport" class="max-w-xl md:max-w-2xl mx-auto py-8 md:py-16 px-5 space-y-10 md:space-y-14 flex flex-col items-center">
-            
-            <div id="emptyState" class="py-24 md:py-32 flex flex-col items-center justify-center text-center opacity-30 border-2 border-dashed border-white/5 rounded-3xl w-full">
-                <div class="relative mb-6">
-                    <div class="absolute inset-0 rounded-full bg-gura-purple/20 blur-xl"></div>
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1" class="relative"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+    <main class="flex-grow relative pb-32 md:pb-12">
+        <div id="viewport" class="max-w-2xl mx-auto py-8 md:py-16 px-5 space-y-12">
+            <div id="emptyState" class="py-20 flex flex-col items-center opacity-40">
+                <div class="w-20 h-20 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mb-6">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
-                <p class="text-[13px] font-mono tracking-wider uppercase text-gray-400">Waiting for New Creation</p>
-                <p class="text-[11px] text-gray-600 mt-2">상단(또는 좌측) 버튼을 클릭하여 웹툰을 생성하세요.</p>
+                <p class="text-sm font-light tracking-widest uppercase">Select 'Generate' to Start</p>
             </div>
-            
-            </div>
-        
-        <footer class="py-10 border-t border-white/5 text-center px-6">
-            <p class="text-[11px] font-orbitron tracking-widest text-gray-700">© GURA TOON STUDIO v6.0 | ZERO-DEFECT ENGINE</p>
-        </footer>
+        </div>
     </main>
 
+    <div class="md:hidden fixed bottom-0 left-0 w-full p-5 glass z-50 rounded-t-[32px] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div id="mProgressContainer" class="hidden mb-4">
+             <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div id="mProgressBar" class="h-full bg-violet-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+        <button id="mGenBtn" class="neon-btn w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black flex items-center justify-center gap-3">
+            <span class="text-lg">⚡</span>
+            <span>새 에피소드 제작</span>
+        </button>
+    </div>
+
     <script>
-        const API_KEY = ""; // 자물쇠: 여기에 API 키를 입력하세요.
+        // --- 데이터베이스 & API 설정 ---
         const SB_URL = "https://auhaxohbsnttmryesffe.supabase.co";
         const SB_KEY = "sb_publishable_wddiMfFQV6WeD0kpwl6n_w__Vrtx7Rl";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         const UI = {
             logs: document.getElementById('logBox'),
-            btn: document.getElementById('genBtn'),
             viewport: document.getElementById('viewport'),
             status: document.getElementById('syncStatus'),
-            progress: document.getElementById('progressContainer'),
+            empty: document.getElementById('emptyState'),
+            // PC UI
+            btn: document.getElementById('genBtn'),
             bar: document.getElementById('progressBar'),
+            pCont: document.getElementById('progressContainer'),
             pText: document.getElementById('progressText'),
-            pPercent: document.getElementById('progressPercent'),
-            empty: document.getElementById('emptyState')
+            pPerc: document.getElementById('progressPercent'),
+            // 모바일 전용 UI
+            mBtn: document.getElementById('mGenBtn'),
+            mBar: document.getElementById('mProgressBar'),
+            mCont: document.getElementById('mProgressContainer')
         };
 
-        // 로그 기록 함수 (디자인 강화)
         function addLog(msg, type = 'info') {
-            const entry = document.createElement('div');
-            entry.className = `log-entry log-${type}`;
-            const timeStr = new Date().toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute: '2-digit' });
-            entry.innerHTML = `<span class="opacity-30 mr-2">[${timeStr}]</span> ${msg}`;
-            UI.logs.appendChild(entry);
-            // 부드러운 스크롤
-            UI.logs.scrollTo({ top: UI.logs.scrollHeight, behavior: 'smooth' });
+            const div = document.createElement('div');
+            const colors = { info: 'text-violet-300/70', success: 'text-emerald-400', error: 'text-rose-400' };
+            div.className = `mb-1 ${colors[type] || colors.info}`;
+            div.innerHTML = `<span class="opacity-30 mr-2">></span>${msg}`;
+            UI.logs.appendChild(div);
+            UI.logs.scrollTop = UI.logs.scrollHeight;
         }
 
-        function clearLogs() { UI.logs.innerHTML = '<div class="log-entry opacity-30">Console cleared.</div>'; }
+        function clearLogs() { UI.logs.innerHTML = '<div class="text-violet-400/60 italic text-[10px]">Log cleared. Waiting for command...</div>'; }
 
-        // 진행 바 업데이트
-        function updateProgress(percent, text) {
-            UI.progress.classList.remove('hidden');
-            UI.bar.style.width = `${percent}%`;
-            UI.pPercent.innerText = `${percent}%`;
-            if (text) UI.pText.innerText = text.toUpperCase();
+        function setProgress(val, text) {
+            [UI.bar, UI.mBar].forEach(b => b.style.width = `${val}%`);
+            [UI.pCont, UI.mCont].forEach(c => c.classList.remove('hidden'));
+            if(text) UI.pText.innerText = text.toUpperCase();
+            UI.pPerc.innerText = `${val}%`;
         }
 
-        // --- 메인 프로세스 ---
         async function startProcess() {
-            if(!API_KEY) { alert("API_KEY를 코드 내에 입력해야 작동합니다."); return; }
-            
-            // UI 초기화 및 로딩 상태
-            UI.btn.disabled = true;
-            UI.btn.classList.add('btn-loading');
-            UI.btn.querySelector('#btnText').innerText = "생성 중...";
-            UI.logs.innerHTML = ''; // 새 시작 시 로그 초기화 (선택사항)
-            updateProgress(5, "Core Sync");
-            addLog("Initiating generation sequence...", "info");
-            
+            [UI.btn, UI.mBtn].forEach(b => b.disabled = true);
+            setProgress(10, "Story Design");
+            addLog("Brainstorming narrative...", "info");
+
             try {
-                // (기존 예제와 동일한 로직, 디자인 요구사항에 맞게 mock 데이터 사용)
-                await new Promise(r => setTimeout(r, 1000)); // 시뮬레이션
-                
-                // STEP 1: Story
-                updateProgress(30, "Scenario Synthesis");
-                addLog("AI 스토리 엔진 가동...", "info");
-                const mockProject = {
-                    title: "한강행 급행열차 탄 후배 팩폭",
-                    content: "야, 층수 낮아졌다고 물타기 하지 마. 너 그러다 지하 뚫고 내핵까지 구경한다!",
-                    prompt: "Korean comedian Gura Kim yelling angrily at a young man looking at a smartphone screen with falling red stock graphs, dramatic comic style, high quality"
-                };
+                // 시뮬레이션 지연 (실제 API 호출 시 교체)
                 await new Promise(r => setTimeout(r, 1500));
-                addLog(`시나리오 확정: ${mockProject.title}`, "success");
+                
+                const mockData = {
+                    title: "지하철 2호선 코인 전사들",
+                    content: "야, 얼굴이 왜 그렇게 퍼렇게 질렸어? 업비트 파란불이 네 얼굴에 반사된 거야? 정신 차려!",
+                    prompt: "Korean comedian Gura Kim yelling at a crying man on a subway, anime style"
+                };
 
-                // STEP 2: Image
-                updateProgress(65, "Rendering Art");
-                addLog("이미지 생성 엔진 호출 중 (최대 1분 소요)...", "info");
-                // 실제 API 호출 대신 Mock 사용
-                const mockUrl = "https://picsum.photos/800/1000?random=" + Date.now();
-                await new Promise(r => setTimeout(r, 2000)); 
-                addLog("이미지 렌더링 완료 및 스토리지 동기화 완료.", "success");
+                setProgress(60, "Art Generation");
+                addLog("Drawing illustrations with AI...", "info");
+                
+                await new Promise(r => setTimeout(r, 2000));
+                const mockImg = `https://picsum.photos/seed/${Date.now()}/800/1000`;
 
-                // STEP 3: DB (생략 - 기존 로직 참고)
-                updateProgress(90, "Publishing");
-                addLog("데이터베이스 발행 중...", "info");
-                await new Promise(r => setTimeout(r, 800));
-
-                // 최종 완료 및 결과 출력
-                renderFinal(mockProject, mockUrl);
-                updateProgress(100, "Completed");
-                addLog("새 에피소드가 성공적으로 발행되었습니다.", "success");
+                renderFinal(mockData, mockImg);
+                setProgress(100, "Completed");
+                addLog("New toon has been deployed.", "success");
 
             } catch (err) {
-                addLog(`Fatal Error: ${err.message}`, "error");
+                addLog(err.message, "error");
             } finally {
-                // UI 상태 복원
-                UI.btn.disabled = false;
-                UI.btn.classList.remove('btn-loading');
-                UI.btn.querySelector('#btnText').innerText = "새 에피소드 즉시 발행";
-                setTimeout(() => UI.progress.classList.add('hidden'), 3000);
+                [UI.btn, UI.mBtn].forEach(b => b.disabled = false);
+                setTimeout(() => [UI.pCont, UI.mCont].forEach(c => c.classList.add('hidden')), 3000);
             }
         }
 
-        // 결과물을 피드 맨 위에 추가하는 함수 (디자인 강화)
         function renderFinal(project, url) {
-            if(UI.empty) UI.empty.remove(); // Empty 상태 제거
+            if(UI.empty) UI.empty.remove();
 
             const card = document.createElement('div');
-            card.className = "card-enter w-full bg-gura-panel rounded-3xl overflow-hidden shadow-2xl border border-white/5 transition-all hover:border-gura-purple/20 group";
-            
-            // 고퀄리티 카드 레이아웃
+            card.className = "card-anim glass rounded-[2.5rem] overflow-hidden shadow-2xl group";
             card.innerHTML = `
-                <div class="relative overflow-hidden aspect-[4/5] bg-gray-900">
-                    <img src="${url}" alt="${project.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/800x1000.png?text=Image+Load+Failed'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-gura-panel via-transparent to-transparent opacity-60"></div>
-                    <span class="absolute top-5 right-5 px-3 py-1.5 bg-gura-dark/60 backdrop-blur-sm text-gura-purple text-[10px] font-black tracking-widest rounded-full border border-gura-purple/20 shadow-neon-purple">JUST PUBLISHED</span>
+                <div class="relative overflow-hidden">
+                    <img src="${url}" class="w-full aspect-[4/5] object-cover transition-transform duration-1000 group-hover:scale-105">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#030305] via-transparent to-transparent opacity-80"></div>
+                    <div class="absolute bottom-6 left-8">
+                        <span class="px-3 py-1 bg-violet-500 text-white text-[10px] font-black tracking-widest rounded-full shadow-lg">EPISODE #NEW</span>
+                    </div>
                 </div>
-                <div class="p-7 md:p-9">
-                    <h2 class="text-3xl md:text-4xl font-black text-white italic tracking-tighter mb-6 leading-none font-sans group-hover:text-gura-purple transition-colors">
+                <div class="p-8 md:p-10 space-y-6">
+                    <h2 class="text-3xl md:text-4xl font-black tracking-tighter italic leading-tight uppercase font-orbitron">
                         ${project.title}
                     </h2>
-                    <div class="relative pl-7 border-l-4 border-gura-purple-dark">
-                        <svg class="absolute top-0 left-[-15px] transform translate-y-[-50%] text-gura-purple opacity-30" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 9.351-9.609v4.069c-2.715.021-3.918 1.857-3.918 4.72h4.099v8.211h-9.532zm-14.017 0v-7.391c0-5.704 3.748-9.57 9.355-9.609v4.069c-2.715.021-3.909 1.857-3.909 4.72h4.099v8.211h-9.545z"/></svg>
-                        <p class="text-gray-300 text-lg md:text-xl leading-relaxed font-light italic">
+                    <div class="relative">
+                        <div class="absolute -left-4 top-0 w-1 h-full bg-violet-500 rounded-full opacity-50"></div>
+                        <p class="text-gray-300 text-lg md:text-xl leading-relaxed italic font-light">
                             "${project.content}"
                         </p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                        <span class="text-[10px] font-mono text-gray-600">RENDERED BY GURA-CORE v6.0</span>
+                        <div class="flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-violet-500/30"></div>
+                            <div class="w-2 h-2 rounded-full bg-violet-500/60"></div>
+                        </div>
                     </div>
                 </div>
             `;
             
-            // 맨 앞에 삽입 (Latest First)
             UI.viewport.prepend(card);
-            
-            // 신규 카드 위치로 부드럽게 스크롤 이동
-            if (window.innerWidth < 768) { // 모바일에서만
-                const headerHeight = document.querySelector('aside').offsetHeight;
-                window.scrollTo({
-                    top: card.offsetTop - headerHeight - 20,
-                    behavior: 'smooth'
-                });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 이벤트 리스너
-        UI.btn.addEventListener('click', startProcess);
-        
-        // Supabase DB 체크 (기존 로직 유지)
+        [UI.btn, UI.mBtn].forEach(b => b.addEventListener('click', startProcess));
+
         window.onload = async () => {
-            addLog("Gura Art Engine v6.0 Ready. Waiting for input.", "info");
-            try {
-                const { error } = await _supabase.from('episodes').select('id').limit(1);
-                if (!error) {
-                    UI.status.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 shadow-neon-purple"></span> DB ONLINE`;
-                    UI.status.classList.remove('text-gray-600');
-                    UI.status.classList.add('text-emerald-400');
-                    addLog("Database connection verified.", "success");
-                }
-            } catch(e) { /* ignore */ }
+            const { error } = await _supabase.from('episodes').select('id').limit(1);
+            if (!error) {
+                UI.status.innerHTML = `
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
+                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Core Online</span>
+                `;
+                addLog("Database handshake successful.", "success");
+            }
         };
     </script>
 </body>
