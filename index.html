@@ -1,10 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>@ilovemom_2026 Pick</title>
-    <!-- Tailwind CSS (CDN Fallback Safe Configuration) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.js"></script>
@@ -17,7 +18,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 스크롤바 숨기기 */
+        /* 가로 스크롤바 숨기기 */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -26,7 +27,7 @@
             scrollbar-width: none;
         }
 
-        /* 바텀시트 열기/닫기 애니메이션 */
+        /* 상세 페이지 바텀시트 애니메이션 */
         .bottom-sheet {
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -35,13 +36,13 @@
             transform: translateY(0);
         }
         
-        /* 토스트 알림 애니메이션 */
+        /* 토스트 알림 노출 상태 */
         .toast-active {
             transform: translate(-50%, 0) !important;
             opacity: 1 !important;
         }
 
-        /* 인스타 감성 그라데이션 보더 */
+        /* 인스타그램 시그니처 그라데이션 */
         .instagram-gradient {
             background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
@@ -49,17 +50,17 @@
 </head>
 <body class="bg-[#F8F9FA] min-h-screen text-slate-900 pb-24">
 
-    <!-- 1. 어필리에이트 안내 상단 고정 바 -->
+    <!-- 상단 고정: 어필리에이트 공지 (신뢰도 제고 및 법적 필수 문구) -->
     <div class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-2 text-center">
-        <p class="text-[10px] font-bold text-slate-500 tracking-tight leading-normal flex items-center justify-center gap-1">
-            <span>⚠️ 이 채널은 파트너스 활동을 통해 일정액의 수수료를 제공받을 수 있습니다.</span>
+        <p class="text-[10px] font-bold text-slate-500 tracking-tight leading-normal">
+            ℹ️ 이 채널은 파트너스 활동을 통해 일정액의 수수료를 제공받을 수 있습니다.
         </p>
     </div>
 
     <!-- 메인 레이아웃 콘텐트 -->
     <main class="max-w-md mx-auto px-4">
         
-        <!-- 2. 크리에이터 프로필 쇼케이스 -->
+        <!-- 프로필 뱃지 및 인스타그램 크리에이터 소개 -->
         <header class="pt-8 pb-6 flex flex-col items-center text-center">
             <div class="relative mb-3">
                 <div class="w-20 h-20 instagram-gradient rounded-full p-[2.5px] shadow-md">
@@ -82,23 +83,23 @@
             </h1>
             
             <p class="text-xs text-slate-500 font-semibold max-w-xs mt-1.5 leading-relaxed">
-                릴스 코디 정보를 모바일에서 1초 만에 확인하세요! ✨
+                릴스 코디 정보를 모바일에서 빠르게 확인하세요! ✨
             </p>
 
-            <!-- 간편 관리자 및 인스타 링크 버튼 -->
+            <!-- 인스타 이동 및 상품 등록 컨트롤 -->
             <div class="flex gap-2 mt-4 w-full justify-center">
                 <a href="https://instagram.com/ilovemom_2026" target="_blank" class="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-full text-xs font-bold text-slate-700 shadow-sm transition active:scale-95">
                     <svg class="w-3.5 h-3.5 text-pink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    인스타그램
+                    인스타그램 피드
                 </a>
                 <button onclick="openAdminPortal()" class="flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 rounded-full text-xs font-bold text-white shadow transition active:scale-95">
                     <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                    상품 등록 대시보드
+                    상품 등록하기
                 </button>
             </div>
         </header>
 
-        <!-- 3. 카테고리 필터 내비게이션 -->
+        <!-- 카테고리 필터 내비게이션 -->
         <nav class="flex gap-1.5 overflow-x-auto no-scrollbar py-2.5 mb-3 sticky top-[37px] z-20 bg-[#F8F9FA]/90 backdrop-blur-md">
             <button onclick="setCategory('전체')" class="category-tab active px-4 py-1.5 rounded-full text-xs font-extrabold bg-slate-900 text-white shadow-sm whitespace-nowrap transition-all">전체</button>
             <button onclick="setCategory('상의')" class="category-tab px-4 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200/60 whitespace-nowrap transition-all">상의</button>
@@ -108,24 +109,30 @@
             <button onclick="setCategory('잡화')" class="category-tab px-4 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200/60 whitespace-nowrap transition-all">잡화</button>
         </nav>
 
-        <!-- 4. 상품 그리드 피드 -->
+        <!-- 검색창 -->
+        <div class="relative mb-6">
+            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="원하는 스타일이나 상품을 찾아보세요!" class="w-full bg-white border border-slate-200/80 rounded-2xl py-3.5 pl-11 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all shadow-sm">
+            <svg class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+
+        <!-- 상품 그리드 피드 -->
         <div id="product-grid" class="grid grid-cols-2 gap-3">
-            <!-- Loading Skeletons -->
+            <!-- 로딩 스켈레톤 -->
             <div class="bg-white rounded-2xl h-64 animate-pulse border border-slate-100"></div>
             <div class="bg-white rounded-2xl h-64 animate-pulse border border-slate-100"></div>
         </div>
         
     </main>
 
-    <!-- 5. 바텀 시트 상세 레이아웃 (소비자 이탈 방지용) -->
+    <!-- 바텀 시트 상세 레이아웃 (이탈 없이 바로 팝업으로 상세 내용 확인 및 구매 유도) -->
     <div id="bottom-sheet-overlay" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0" onclick="closeProductDetail()">
         <div id="bottom-sheet" class="bottom-sheet fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[2.5rem] overflow-hidden max-h-[90vh] flex flex-col shadow-2xl" onclick="event.stopPropagation()">
-            <!-- 닫기 핸들러 상단 바 -->
+            <!-- 핸들러 상단 바 -->
             <div class="w-full flex justify-center py-4 bg-white border-b border-slate-50 cursor-pointer" onclick="closeProductDetail()">
                 <div class="w-10 h-1 bg-slate-200 rounded-full"></div>
             </div>
 
-            <!-- 스크롤 가능한 본문 영역 -->
+            <!-- 스크롤 상세 컨텐츠 -->
             <div class="overflow-y-auto no-scrollbar p-5 pb-8 space-y-5 flex-grow">
                 <div class="relative rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
                     <img id="detail-image" src="" alt="" class="w-full h-auto object-cover max-h-[340px] mx-auto">
@@ -140,16 +147,16 @@
                     </div>
                 </div>
 
-                <!-- AI 자동완성 본문 영역 -->
+                <!-- 스타일 가이드 -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                     <h3 class="text-[11px] font-black text-slate-800 flex items-center gap-1.5 mb-2 uppercase tracking-tight">
-                        <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"/></svg>
-                        스마트 상세 코디 가이드
+                        <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5z"/></svg>
+                        스타일 코디 가이드
                     </h3>
                     <p id="detail-description" class="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap"></p>
                 </div>
 
-                <!-- 초강력 CTA 버튼 설계 -->
+                <!-- 구매 링크 바로가기 (최우선 배치) -->
                 <div class="space-y-2 pt-1.5">
                     <a id="detail-buy-link" href="" target="_blank" class="w-full py-4 bg-rose-500 hover:bg-rose-600 text-white text-xs font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 active:scale-95 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
@@ -160,12 +167,12 @@
         </div>
     </div>
 
-    <!-- 6. 관리자 인증 및 업로드 모달 -->
+    <!-- 관리자 컨트롤 및 업로드 모달 -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-45 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <header class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 class="font-black text-slate-800 text-xs flex items-center gap-1.5 uppercase tracking-wide">
-                    🔒 원스톱 관리 대시보드
+                    🔒 관리자 로그인
                 </h3>
                 <button onclick="closeAdminPortal()" class="p-1 text-slate-400 hover:text-slate-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -173,33 +180,30 @@
             </header>
 
             <div class="overflow-y-auto p-5 space-y-4 flex-grow">
-                <!-- 원터치 검증 폼 (이메일 인증을 안 거쳐도 암호값 일치 시 자동 바이패스) -->
-                <div id="admin-login-view" class="space-y-3">
-                    <p class="text-[11px] text-slate-500 leading-relaxed">
-                        Supabase Email Confirmation 제약 문제를 완전히 해결하기 위해 **가상 세션 인증** 구조로 대폭 우회 구축되었습니다. 안심하고 로그인해 보세요!
-                    </p>
+                <!-- 로그인 계정 입력 (오타 및 설명글 정리 완료) -->
+                <div id="admin-login-view" class="space-y-3.5">
                     <input type="email" id="admin-email" value="salad20c@gmail.com" readonly class="w-full p-3.5 border border-slate-200 rounded-2xl text-xs font-bold bg-slate-100 focus:outline-none text-slate-500">
                     <input type="password" id="admin-password" placeholder="비밀번호" class="w-full p-3.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-slate-900">
-                    <button onclick="verifyAndOpenForm()" class="w-full bg-slate-950 text-white py-4 rounded-2xl text-xs font-extrabold hover:bg-slate-900 active:scale-95 transition-all shadow-md">
-                        확인 후 로그인 완료
+                    <button onclick="performAdminLogin()" class="w-full bg-slate-950 text-white py-4 rounded-2xl text-xs font-extrabold hover:bg-slate-900 active:scale-95 transition-all shadow-md">
+                        로그인
                     </button>
                 </div>
 
-                <!-- 초간편 업로드 입력 폼 -->
+                <!-- 상품 업로드 대시보드 양식 -->
                 <div id="admin-action-view" class="hidden space-y-3.5">
                     <div class="flex justify-between items-center bg-emerald-50 border border-emerald-100 p-3 rounded-2xl">
-                        <span class="text-[10px] font-black text-emerald-800">✅ 관리자 모드 실행 중</span>
+                        <span class="text-[10px] font-black text-emerald-800">✅ 관리자 인증 완료</span>
                         <button onclick="performLogout()" class="text-[10px] text-red-500 underline font-bold">로그아웃</button>
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-[9px] font-black text-slate-500 uppercase tracking-tight">1. 상품 대표 이미지 (필수)</label>
+                        <label class="block text-[9px] font-black text-slate-500 uppercase tracking-tight">1. 대표 이미지 등록 (WebP 자동변환)</label>
                         <input type="file" id="product-img" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div class="space-y-1">
-                            <label class="block text-[9px] font-black text-slate-500">2. 카테고리</label>
+                            <label class="block text-[9px] font-black text-slate-500">2. 카테고리 선택</label>
                             <select id="product-cat" class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl bg-white focus:outline-none font-bold">
                                 <option value="상의">상의</option>
                                 <option value="하의">하의</option>
@@ -215,41 +219,40 @@
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-[9px] font-black text-slate-500">4. 상품명 (인스타 게시글 요약)</label>
+                        <label class="block text-[9px] font-black text-slate-500">4. 상품 타이틀</label>
                         <input type="text" id="product-title" placeholder="예: 찰랑거리는 셔링 원피스" class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none font-bold">
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-[9px] font-black text-slate-500">5. 어필리에이트 구매 외부 링크 (필수)</label>
-                        <input type="url" id="product-link" placeholder="쿠팡 파트너스 등 원본 링크 주소" class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none focus:ring-1 focus:ring-rose-500 font-bold">
+                        <label class="block text-[9px] font-black text-slate-500">5. 어필리에이트 파트너스 외부 링크</label>
+                        <input type="url" id="product-link" placeholder="상품 연동 아웃링크" class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none focus:ring-1 focus:ring-rose-500 font-bold">
                     </div>
 
-                    <!-- 이 아래부터는 공란으로 두어도 AI가 알아서 고품질 본문으로 빌드해줍니다! -->
                     <div class="space-y-1">
-                        <label class="block text-[9px] font-black text-slate-500">6. 기존 정상가 (공란 가능 - 자동 계산)</label>
+                        <label class="block text-[9px] font-black text-slate-500">6. 정상가 (공란 가능 - 자동 계산)</label>
                         <input type="text" id="product-orig-price" placeholder="예: 35,000원" class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none">
                     </div>
 
                     <div class="space-y-1">
-                        <label class="block text-[9px] font-black text-slate-500">7. 코디 코멘트 (공란 가능 - AI 자동 보정)</label>
-                        <textarea id="product-desc" rows="3" placeholder="비워두셔도 세련된 쇼핑 큐레이션 설명으로 자동 생성됩니다." class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none resize-none"></textarea>
+                        <label class="block text-[9px] font-black text-slate-500">7. 코멘트 가이드 (공란 가능 - 자동 보정)</label>
+                        <textarea id="product-desc" rows="3" placeholder="비워두셔도 세련된 인스타 쇼핑 설명 문구로 자동 포맷팅됩니다." class="w-full text-xs p-3.5 border border-slate-200 rounded-2xl focus:outline-none resize-none"></textarea>
                     </div>
 
                     <button id="admin-submit-btn" onclick="registerProduct()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl text-xs font-black tracking-wide active:scale-95 transition-all shadow flex items-center justify-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        초스피드 배포 완료하기
+                        배포 완료하기
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 7. iframe/모바일 인앱 샌드박스 완벽 대응 커스텀 토스트 알림창 -->
+    <!-- iframe 인앱 샌드박스 완벽 호환 커스텀 토스트 알림 (alert 우회) -->
     <div id="custom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-[11px] font-bold px-5 py-3 rounded-full shadow-xl z-50 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none whitespace-nowrap">
-        알림 메시지 영역
+        알림 메시지
     </div>
 
-    <!-- Javascript Scripting -->
+    <!-- SDK & 비즈니스 로직 제어 -->
     <script>
         const SUPABASE_URL = 'https://wsguyhtyfpdbfhbqebag.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_6gUnm_lbFF9XFnJY-D2Tcw_MaUCxFIN';
@@ -258,9 +261,8 @@
         let productsData = [];
         let filteredProducts = [];
         let currentCategory = '전체';
-        let isAdminAuthenticated = false;
 
-        // Custom Toast System (alert() 우회 대체)
+        // Custom Toast System (샌드박스 환경 대응용 커스텀 경고창)
         function showToast(message) {
             const toast = document.getElementById('custom-toast');
             toast.innerText = message;
@@ -271,24 +273,21 @@
             }, 2500);
         }
 
-        // Initialize App
+        // 앱 초기화 로드
         function initApp() {
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                
-                // 가상 세션 확인 복구
-                const localSession = localStorage.getItem('admin_virtual_session');
-                if (localSession === 'salad20c_active') {
-                    isAdminAuthenticated = true;
-                    toggleAdminInterface(true);
-                } else {
-                    toggleAdminInterface(false);
-                }
-
+                checkActiveSession();
                 fetchProducts();
             } catch (err) {
-                console.error("Supabase SDK 초기화 중 에러:", err);
+                console.error("SDK 초기화 에러:", err);
             }
+        }
+
+        // 실시간 Auth 세션 확인 및 UI 정합성 매칭
+        async function checkActiveSession() {
+            const { data } = await supabaseClient.auth.getSession();
+            toggleAdminInterface(!!data?.session);
         }
 
         function toggleAdminInterface(isLoggedIn) {
@@ -303,30 +302,42 @@
             }
         }
 
-        // 1. 가상 세션 처리 기반의 이메일 무인증 로그인 우회 기술 적용
-        function verifyAndOpenForm() {
-            const email = document.getElementById('admin-email').value;
+        // Supabase 정식 로그인 기능 (이메일 인증이 꺼졌으므로 즉각 승인)
+        async function performAdminLogin() {
+            const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value;
 
-            if (email === "salad20c@gmail.com" && password === "cxx1212") {
-                // 이메일 인증이 차단된 상태이므로 클라이언트 로컬 스토리지에 가상 토큰을 즉시 승인 및 유지
-                localStorage.setItem('admin_virtual_session', 'salad20c_active');
-                isAdminAuthenticated = true;
-                
-                // 임시 익명 세션 획득하여 Supabase 스토리지 및 DB 데이터 바인딩 승인 
-                supabaseClient.auth.signInAnonymously().then(() => {
-                    showToast("🔓 관리자 모드가 완벽하게 활성화되었습니다!");
-                    toggleAdminInterface(true);
+            if (!password) {
+                showToast("⚠️ 비밀번호를 입력해 주세요.");
+                return;
+            }
+
+            const loginBtn = document.querySelector("#admin-login-view button");
+            loginBtn.disabled = true;
+            loginBtn.innerText = "로그인 중...";
+
+            try {
+                // 이메일 2차 확인이 해제되었으므로 다이렉트로 로그인 요청 전달
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
                 });
-            } else {
-                showToast("❌ 비밀번호가 올바르지 않습니다.");
+
+                if (error) throw error;
+
+                showToast("🔓 성공적으로 인증되었습니다!");
+                toggleAdminInterface(true);
+            } catch (err) {
+                showToast("❌ 로그인 실패: " + err.message);
+                console.error(err);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "로그인";
             }
         }
 
-        function performLogout() {
-            localStorage.removeItem('admin_virtual_session');
-            isAdminAuthenticated = false;
-            supabaseClient.auth.signOut();
+        async function performLogout() {
+            await supabaseClient.auth.signOut();
             showToast("🔒 안전하게 로그아웃 되었습니다.");
             toggleAdminInterface(false);
         }
@@ -340,7 +351,7 @@
             document.getElementById('admin-modal').classList.add('hidden');
         }
 
-        // 2. Client-side WebP Compression Core Engine
+        // 브라우저 단 WebP 이미지 가속 트랜스파일러 및 대역폭 최적화
         function processAndCompressToWebP(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -352,7 +363,7 @@
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         
-                        // 크리에이터의 원본 종횡비를 완전히 유지하되 최적 용량 가로 세팅
+                        // 크리에이터 고유의 비율을 완벽히 존중하며 모바일 최적 해상도로 압축 가공
                         const BOUNDING_LIMIT = 1000;
                         let width = img.width;
                         let height = img.height;
@@ -373,31 +384,25 @@
 
                         canvas.toBlob((blob) => {
                             if (blob) resolve(blob);
-                            else reject(new Error("WebP 변환 실패"));
-                        }, 'image/webp', 0.82); // 고퀄리티 시각 효과 유지 계수
+                            else reject(new Error("WebP 최적화 컨버팅 실패"));
+                        }, 'image/webp', 0.85); // 디테일 왜곡을 차단하는 85% 선명도 유지 매개변수 적용
                     };
                 };
                 reader.onerror = (error) => reject(error);
             });
         }
 
-        // 3. 지능형 자동 글쓰기 어시스턴트 기능 탑재
+        // 인스타 친화적 상세 설명 자동 생성 어시스턴트
         function autoGenerateMetaText(title, price, category, origDesc) {
             if (origDesc && origDesc.trim().length > 3) {
                 return origDesc;
             }
-            // 제목과 가격 정보를 가공하여 감성적인 인스타 마켓 큐레이션 텍스트로 보정 자동 완료
             const hashtags = `#데일리룩 #여성패션 #릴스코디 #인스타마켓 #@ilovemom_2026`;
             return `🛍️ 크리에이터 @ilovemom_2026 추천 코디템!\n\n인스타 릴스 영상 속에서 다들 궁금해하셨던 바로 그 [${category}] 라인 제품입니다.\n실제 입었을 때 핏감이 훨씬 부드럽고 자연스러운 라인감을 살려줘서 데일리웨어로 제격이에요.\n\n✔️ 추천 코디 포인트: 깔끔하고 트렌디한 디자인\n✔️ 가격대 혜택 정보: 인스타 전용 최저가 ${price} 적용 중!\n\n조기 품절되기 전에 아래 바로가기 버튼을 통해 혜택을 챙겨보세요!\n\n${hashtags}`;
         }
 
-        // 4. Register Product Logic with Virtual Auth Security Bypass
+        // 상품 등록 트랜잭션 핸들러
         async function registerProduct() {
-            if (!isAdminAuthenticated) {
-                showToast("로그인이 필요합니다.");
-                return;
-            }
-
             const fileInput = document.getElementById('product-img');
             const category = document.getElementById('product-cat').value;
             const price = document.getElementById('product-price').value.trim() || "최저가 확인";
@@ -408,24 +413,24 @@
             const submitBtn = document.getElementById('admin-submit-btn');
 
             if (!fileInput.files[0] || !title || !link) {
-                showToast("⚠️ 필수 입력 정보(이미지, 제목, 링크)를 입력해 주세요.");
+                showToast("⚠️ 이미지, 상품명, 링크는 무조건 필수 항목입니다.");
                 return;
             }
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = `
                 <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>컨버팅 및 버킷 전송 중...</span>
+                <span>업로드 중...</span>
             `;
 
             try {
-                // WebP 압축 즉시 수행
+                // 이미지 WebP 가공 프로세서 연동
                 const rawFile = fileInput.files[0];
                 const optimizedWebpBlob = await processAndCompressToWebP(rawFile);
                 const uniqueId = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
                 const filePath = `item_${uniqueId}.webp`;
 
-                // Storage 업로드 (로그인 미완 세션 우회)
+                // Storage 업로드 실행
                 const { error: uploadError } = await supabaseClient.storage
                     .from('images')
                     .upload(filePath, optimizedWebpBlob, {
@@ -440,10 +445,10 @@
 
                 const cdnImageUrl = urlData.publicUrl;
 
-                // 자동 완성 설명 메커니즘 호출
+                // 자동 코디 팁 작성 어시스턴트 매핑
                 const processedDescription = autoGenerateMetaText(title, price, category, rawDesc);
                 
-                // 가상 가격 혜택 계산 (정상가 공란 시 판매가의 약 1.2배로 럭셔리 할인가 데코레이션 자동 계산)
+                // 할인율 데코레이션을 위한 오리지널가 역산 적용 (정상가 비어있을 시 약 1.25배 가이드 자동 산출)
                 let finalOriginalPrice = origPrice;
                 if (!origPrice && price !== "최저가 확인") {
                     const cleanPrice = parseInt(price.replace(/[^0-9]/g, ''));
@@ -453,7 +458,7 @@
                     }
                 }
 
-                // Database 레코드 세션 등록
+                // Supabase Database Insert
                 const { error: dbError } = await supabaseClient
                     .from('products')
                     .insert([{
@@ -468,9 +473,9 @@
 
                 if (dbError) throw dbError;
 
-                showToast("🎉 새로운 쇼핑 아이템이 홈 피드에 실시간 반영되었습니다!");
+                showToast("🎉 새로운 쇼핑 아이템이 정상 배포되었습니다!");
                 
-                // Form Reset
+                // Form 데이터 완전 초기화
                 fileInput.value = '';
                 document.getElementById('product-price').value = '';
                 document.getElementById('product-title').value = '';
@@ -481,18 +486,18 @@
                 closeAdminPortal();
                 fetchProducts();
             } catch (err) {
-                showToast("⚠️ 오류 발생: " + err.message);
+                showToast("⚠️ 업로드 실패: " + err.message);
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    초스피드 배포 완료하기
+                    배포 완료하기
                 `;
             }
         }
 
-        // 5. Database Fetch
+        // Database Fetch
         async function fetchProducts() {
             const grid = document.getElementById('product-grid');
             try {
@@ -506,7 +511,7 @@
                 productsData = data || [];
                 applyFilters();
             } catch (err) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-16 text-xs text-red-400 font-medium">데이터 연동 오류: ${err.message}</div>`;
+                grid.innerHTML = `<div class="col-span-2 text-center py-16 text-xs text-red-400 font-medium font-semibold">피드 수신 중단: ${err.message}</div>`;
             }
         }
 
@@ -524,10 +529,20 @@
             applyFilters();
         }
 
+        function handleSearch() {
+            applyFilters();
+        }
+
         function applyFilters() {
-            filteredProducts = currentCategory === '전체' 
-                ? productsData 
-                : productsData.filter(p => p.category === currentCategory);
+            const searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            filteredProducts = productsData.filter(p => {
+                const matchesCategory = currentCategory === '전체' || p.category === currentCategory;
+                const matchesSearch = !searchKeyword || 
+                                      p.title.toLowerCase().includes(searchKeyword) || 
+                                      (p.description && p.description.toLowerCase().includes(searchKeyword));
+                return matchesCategory && matchesSearch;
+            });
 
             renderProducts();
         }
@@ -545,7 +560,6 @@
             }
 
             grid.innerHTML = filteredProducts.map(p => {
-                // 수동 및 자동 생성된 정상가 대비 할인 비율 뱃지
                 let discountBadge = '';
                 if (p.original_price && p.price) {
                     discountBadge = `<span class="bg-rose-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md">HOT</span>`;
@@ -585,7 +599,7 @@
             }).join('');
         }
 
-        // 6. Interactive Bottom Sheet Controller
+        // 바텀시트 제어 영역
         function openProductDetail(product) {
             document.getElementById('detail-image').src = product.image_url;
             document.getElementById('detail-category').innerText = product.category;
@@ -601,7 +615,7 @@
 
             document.getElementById('detail-description').innerText = product.description;
 
-            // Link Mapping
+            // 아웃링크 매핑
             document.getElementById('detail-buy-link').href = product.link;
 
             const overlay = document.getElementById('bottom-sheet-overlay');
@@ -629,3 +643,5 @@
     </script>
 </body>
 </html>
+
+```
